@@ -11,14 +11,14 @@
 @implementation RTEGestureRecognizer
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (touchesBeganCallback)
-        touchesBeganCallback(touches, event);
+    if (_touchesBeganCallback)
+        _touchesBeganCallback(touches, event);
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (touchesEndedCallback)
-        touchesEndedCallback(touches, event);
+    if (_touchesEndedCallback)
+        _touchesEndedCallback(touches, event);
 }
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer {
     if ([[preventingGestureRecognizer description] rangeOfString:@"UIScrollViewPanGestureRecognizer"].location != NSNotFound)
