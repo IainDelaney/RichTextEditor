@@ -44,7 +44,7 @@
     _timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(checkSelection:) userInfo:nil repeats:YES];
     
     UIMenuItem *highlightMenuItem = [[UIMenuItem alloc] initWithTitle:@"Highlight" action:@selector(highlight)];
-    [[UIMenuController sharedMenuController] setMenuItems:[NSArray arrayWithObject:highlightMenuItem]];
+    [[UIMenuController sharedMenuController] setMenuItems:@[highlightMenuItem]];
 
     RTEGestureRecognizer *tapInterceptor = [[RTEGestureRecognizer alloc] init];
     tapInterceptor.touchesBeganCallback = ^(NSSet *touches, UIEvent *event) {
@@ -127,7 +127,7 @@
     
     UIBarButtonItem *plusFontSize = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStyleBordered target:self action:@selector(fontSizeUp)];
     UIBarButtonItem *minusFontSize = [[UIBarButtonItem alloc] initWithTitle:@"-" style:UIBarButtonItemStyleBordered target:self action:@selector(fontSizeDown)];
-    int size = [[_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"] intValue];
+    NSInteger size = [[_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"] intValue];
     if (size == 7)
         plusFontSize.enabled = NO;
     else if (size == 1)
@@ -150,7 +150,7 @@
     NSString *fontName = [_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
     UIFont *font = [UIFont fontWithName:fontName size:[UIFont systemFontSize]];
     if (font)
-        [fontPicker setTitleTextAttributes:[NSDictionary dictionaryWithObject:font forKey:UITextAttributeFont] forState:UIControlStateNormal];
+        [fontPicker setTitleTextAttributes:@{UITextAttributeFont: font} forState:UIControlStateNormal];
     
     [items addObject:fontPicker];
  
@@ -181,14 +181,14 @@
     NSString *currentColor = [_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('backColor')"];
     BOOL isYellow = [currentColor isEqualToString:@"rgb(255, 255, 0)"];
     UIMenuItem *highlightMenuItem = [[UIMenuItem alloc] initWithTitle:(isYellow) ? @"De-Highlight" : @"Highlight" action:@selector(highlight)];
-    [[UIMenuController sharedMenuController] setMenuItems:[NSArray arrayWithObject:highlightMenuItem]];
+    [[UIMenuController sharedMenuController] setMenuItems:@[highlightMenuItem]];
     
 }
 
 - (void)fontSizeUp {
     [_timer invalidate]; // Stop it while we work
     
-    int size = [[_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"] intValue] + 1;
+    NSInteger size = [[_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"] intValue] + 1;
     [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, '%i')", size]];
     
     _timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(checkSelection:) userInfo:nil repeats:YES];
@@ -197,7 +197,7 @@
 - (void)fontSizeDown {
     [_timer invalidate]; // Stop it while we work
     
-    int size = [[_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"] intValue] - 1;
+    NSInteger size = [[_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"] intValue] - 1;
     [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, '%i')", size]];
     
     _timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(checkSelection:) userInfo:nil repeats:YES];
@@ -229,9 +229,9 @@
     [mutableCopy replaceCharactersInRange:NSMakeRange(mutableCopy.length-1, 1) withString:@""];
     
     NSArray *components = [mutableCopy componentsSeparatedByString:@","];
-    int red = [[components objectAtIndex:0] intValue];
-    int green = [[components objectAtIndex:1] intValue];
-    int blue = [[components objectAtIndex:2] intValue];
+    NSInteger red = [components[0] integerValue];
+    NSInteger green = [components[1] integerValue];
+    NSInteger blue = [components[2] integerValue];
     
     UIColor *retVal = [UIColor colorWithRed:red/255.0 green:green/255.0 blue:blue/255.0 alpha:1.0];
     return retVal;
@@ -246,18 +246,18 @@
     imagePickerPopover = popover;
     
 }
-static int i = 0;
+static NSInteger i = 0;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     // Obtain the path to save to
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *documentsDirectory = paths[0];
     NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"photo%i.png", i]];
     
     // Extract image from the picker and save it
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+    NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:@"public.image"]){
-        UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+        UIImage *image = info[UIImagePickerControllerOriginalImage];
         NSData *data = UIImagePNGRepresentation(image);
         [data writeToFile:imagePath atomically:YES];
     }
