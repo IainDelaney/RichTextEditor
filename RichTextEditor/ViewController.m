@@ -37,9 +37,9 @@
     NSBundle *bundle = [NSBundle mainBundle];
     NSURL *indexFileURL = [bundle URLForResource:@"index" withExtension:@"html"];
     [_webView loadRequest:[NSURLRequest requestWithURL:indexFileURL]];
-    
+
     [self checkSelection:self];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     _timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(checkSelection:) userInfo:nil repeats:YES];
     
@@ -108,9 +108,9 @@
     
     NSMutableArray *items = [[NSMutableArray alloc] init];
     
-    UIBarButtonItem *bold = [[UIBarButtonItem alloc] initWithTitle:(boldEnabled) ? @"[B]" : @"B" style:UIBarButtonItemStyleBordered target:self action:@selector(bold)];
-    UIBarButtonItem *italic = [[UIBarButtonItem alloc] initWithTitle:(italicEnabled) ? @"[I]" : @"I" style:UIBarButtonItemStyleBordered target:self action:@selector(italic)];
-    UIBarButtonItem *underline = [[UIBarButtonItem alloc] initWithTitle:(underlineEnabled) ? @"[U]" : @"U" style:UIBarButtonItemStyleBordered target:self action:@selector(underline)];
+    UIBarButtonItem *bold = [[UIBarButtonItem alloc] initWithImage:(boldEnabled) ? [UIImage imageNamed:@"toolbarIcon_boldSelected"] : [UIImage imageNamed:@"toolbarIcon_bold"] style:UIBarButtonItemStylePlain target:self action:@selector(bold)];
+    UIBarButtonItem *italic = [[UIBarButtonItem alloc] initWithImage:(italicEnabled) ? [UIImage imageNamed:@"toolbarIcon_italicsSelected"] : [UIImage imageNamed:@"toolbarIcon_italics"] style:UIBarButtonItemStylePlain target:self action:@selector(italic)];
+    UIBarButtonItem *underline = [[UIBarButtonItem alloc] initWithImage:(underlineEnabled) ? [UIImage imageNamed:@"toolbarIcon_underlineSelected"] : [UIImage imageNamed:@"toolbarIcon_underline"] style:UIBarButtonItemStylePlain target:self action:@selector(underline)];
     
     [items addObject:underline];
     [items addObject:italic];
@@ -136,12 +136,12 @@
     [items addObject:minusFontSize];
     // Font Color Picker
     UIBarButtonItem *fontColorPicker = [[UIBarButtonItem alloc] initWithTitle:@"Color" style:UIBarButtonItemStyleBordered target:self action:@selector(displayFontColorPicker:)];
-    
+
     NSString *foreColor = [_webView stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('foreColor')"];
     UIColor *color = [self colorFromRGBValue:foreColor];
     if (color)
         [fontColorPicker setTintColor:color];
-    
+
     [items addObject:fontColorPicker];
 
     // Font Picker
@@ -153,7 +153,7 @@
         [fontPicker setTitleTextAttributes:@{UITextAttributeFont: font} forState:UIControlStateNormal];
     
     [items addObject:fontPicker];
- 
+    
     UIBarButtonItem *undo = [[UIBarButtonItem alloc] initWithTitle:@"Undo" style:UIBarButtonItemStyleBordered target:self action:@selector(undo)];
     UIBarButtonItem *redo = [[UIBarButtonItem alloc] initWithTitle:@"Redo" style:UIBarButtonItemStyleBordered target:self action:@selector(redo)];
     
@@ -288,7 +288,7 @@ static NSInteger i = 0;
     }
     
     // Locate UIWebFormView.
-    for (UIView *possibleFormView in [keyboardWindow subviews]) {
+    for (UIView *possibleFormView in keyboardWindow.subviews) {
         // iOS 5 sticks the UIWebFormView inside a UIPeripheralHostView.
         if ([[possibleFormView description] rangeOfString:@"UIPeripheralHostView"].location != NSNotFound) {
             for (UIView *subviewWhichIsPossibleFormView in [possibleFormView subviews]) {
